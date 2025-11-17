@@ -1,10 +1,7 @@
 #include <Arduino.h>
-#include <RumpshiftLogger.h>
 #include "events.h"
 #include "ui/ui.h"
 #include "Globals.h"
-
-extern RumpshiftLogger logger;
 
 void handleUserDropdownEvent(lv_event_t *e)
 {
