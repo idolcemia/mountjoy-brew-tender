@@ -32,7 +32,7 @@ void ui_init(void)
     ui_UserSelection_screen_init();
     ui_Screen2_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_Screen1);
+    lv_disp_load_scr(ui_UserSelectionScreen);
 }
 
 void ui_destroy(void)

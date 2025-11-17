@@ -1,4 +1,4 @@
-SET(SOURCES ui_Screen1.c
+SET(SOURCES ui_UserSelectionScreen.c
     ui_Screen2.c
     ui.c
     ui_comp_hook.c

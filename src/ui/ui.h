@@ -25,7 +25,7 @@ extern "C" {
 #include "ui_helpers.h"
 
 ///////////////////// SCREENS ////////////////////
-#include "screens/ui_Screen1.h"
+#include "screens/ui_UserSelectionScreen.h"
 #include "ui_Screen2.h"
 
 ///////////////////// VARIABLES ////////////////////

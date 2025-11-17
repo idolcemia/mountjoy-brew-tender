@@ -12,7 +12,7 @@ lv_obj_t *uic_UserDisplayLabel;
 lv_obj_t *uic_ConfirmUserButton;
 lv_obj_t *uic_SelectUserLabel;
 lv_obj_t *uic_BSLogo;
-lv_obj_t *ui_Screen1 = NULL;
+lv_obj_t *ui_UserSelectionScreen = NULL;
 lv_obj_t *ui_Dropdown1 = NULL;
 lv_obj_t *ui_BSLogo = NULL;
 lv_obj_t *ui_SelectUserLabel = NULL;
@@ -45,14 +45,14 @@ void ui_event_ConfirmUserButton(lv_event_t *e)
 
 void ui_UserSelection_screen_init(void)
 {
-    ui_Screen1 = lv_obj_create(NULL);
-    lv_obj_remove_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE); /// Flags
-    lv_obj_set_style_bg_color(ui_Screen1, lv_color_hex(0xEE7B01), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Screen1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_color(ui_Screen1, lv_color_hex(0x2E1A05), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_dir(ui_Screen1, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_UserSelectionScreen = lv_obj_create(NULL);
+    lv_obj_remove_flag(ui_UserSelectionScreen, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+    lv_obj_set_style_bg_color(ui_UserSelectionScreen, lv_color_hex(0xEE7B01), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_UserSelectionScreen, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_color(ui_UserSelectionScreen, lv_color_hex(0x2E1A05), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_UserSelectionScreen, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Dropdown1 = lv_dropdown_create(ui_Screen1);
+    ui_Dropdown1 = lv_dropdown_create(ui_UserSelectionScreen);
     // lv_dropdown_set_options(ui_Dropdown1, "Option 1\nOption 2\nOption 3");
     lv_dropdown_set_options(ui_Dropdown1, users->getUsersDelimit("\n").c_str());
     lv_obj_set_width(ui_Dropdown1, 314);
@@ -64,7 +64,7 @@ void ui_UserSelection_screen_init(void)
     lv_obj_set_style_bg_color(ui_Dropdown1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Dropdown1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_BSLogo = lv_image_create(ui_Screen1);
+    ui_BSLogo = lv_image_create(ui_UserSelectionScreen);
     lv_image_set_src(ui_BSLogo, &ui_img_buildshift_brand_png);
     lv_obj_set_width(ui_BSLogo, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_BSLogo, LV_SIZE_CONTENT); /// 1
@@ -74,7 +74,7 @@ void ui_UserSelection_screen_init(void)
     lv_obj_add_flag(ui_BSLogo, LV_OBJ_FLAG_CLICKABLE);     /// Flags
     lv_obj_remove_flag(ui_BSLogo, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
-    ui_SelectUserLabel = lv_label_create(ui_Screen1);
+    ui_SelectUserLabel = lv_label_create(ui_UserSelectionScreen);
     lv_obj_set_width(ui_SelectUserLabel, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_SelectUserLabel, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_SelectUserLabel, -9);
@@ -90,7 +90,7 @@ void ui_UserSelection_screen_init(void)
     lv_obj_set_style_bg_grad_color(ui_SelectUserLabel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui_SelectUserLabel, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ConfirmUserButton = lv_button_create(ui_Screen1);
+    ui_ConfirmUserButton = lv_button_create(ui_UserSelectionScreen);
     lv_obj_set_width(ui_ConfirmUserButton, 266);
     lv_obj_set_height(ui_ConfirmUserButton, 50);
     lv_obj_set_x(ui_ConfirmUserButton, 197);
@@ -103,7 +103,7 @@ void ui_UserSelection_screen_init(void)
     lv_obj_set_style_text_color(ui_ConfirmUserButton, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ConfirmUserButton, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_UserDisplayLabel = lv_label_create(ui_Screen1);
+    ui_UserDisplayLabel = lv_label_create(ui_UserSelectionScreen);
     lv_obj_set_width(ui_UserDisplayLabel, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_UserDisplayLabel, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_UserDisplayLabel, -12);
@@ -114,7 +114,7 @@ void ui_UserSelection_screen_init(void)
     lv_obj_set_style_text_opa(ui_UserDisplayLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_UserDisplayLabel, &lv_font_montserrat_40, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ConfirmLabel1 = lv_label_create(ui_Screen1);
+    ui_ConfirmLabel1 = lv_label_create(ui_UserSelectionScreen);
     lv_obj_set_width(ui_ConfirmLabel1, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_ConfirmLabel1, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_ConfirmLabel1, 196);
@@ -134,11 +134,11 @@ void ui_UserSelection_screen_init(void)
 
 void ui_UserSelection_screen_destroy(void)
 {
-    if (ui_Screen1)
-        lv_obj_del(ui_Screen1);
+    if (ui_UserSelectionScreen)
+        lv_obj_del(ui_UserSelectionScreen);
 
     // NULL screen variables
-    ui_Screen1 = NULL;
+    ui_UserSelectionScreen = NULL;
     ui_Dropdown1 = NULL;
     uic_BSLogo = NULL;
     ui_BSLogo = NULL;

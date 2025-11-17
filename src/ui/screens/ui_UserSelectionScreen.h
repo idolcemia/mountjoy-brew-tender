@@ -3,18 +3,18 @@
 // LVGL version: 9.1.0
 // Project name: bs_kettle_fill
 
-#ifndef UI_SCREEN1_H
-#define UI_SCREEN1_H
+#ifndef UI_USERSELECTION_H
+#define UI_USERSELECTION_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    // SCREEN: ui_Screen1
+    // SCREEN: ui_UserSelectionScreen
     extern void ui_UserSelection_screen_init(void);
     extern void ui_UserSelection_screen_destroy(void);
-    extern lv_obj_t *ui_Screen1;
+    extern lv_obj_t *ui_UserSelectionScreen;
     extern void ui_event_user_dropdown(lv_event_t *e);
     extern lv_obj_t *ui_Dropdown1;
     extern lv_obj_t *ui_BSLogo;
