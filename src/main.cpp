@@ -69,7 +69,6 @@ void setup()
 
 void loop()
 {
-    // Diagnostic::updateDefault();
     lv_timer_handler();
 
     // Only update once LVGL is stable
