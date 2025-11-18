@@ -14,8 +14,6 @@
 #include "Arduino_GigaDisplayTouch.h"
 #include "lvgl.h"
 #include "ui/ui.h"
-#include "ui/MenuManager.h"
-#include "ui/screens/ui_WiFiConnect.h"
 
 // --- Internal libs ---
 #include <NetworkManager.h>
@@ -33,8 +31,6 @@ const char *password = WIFI_PASS;
 
 const char *server = LAN_IP;
 const int port = 8000;
-
-MenuManager menus;
 
 WiFiClientWrapper wifiClient;
 
@@ -56,8 +52,6 @@ void setup()
 {
     logger.begin();
     logger.info("Starting log....");
-
-    menus.addMenu("WiFi Connect", ui_WiFiConnectScreen, ui_WiFiConnect_screen_init);
 
     network->setRemote(server, port);
     // network->begin();

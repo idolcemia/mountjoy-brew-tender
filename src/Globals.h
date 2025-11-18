@@ -4,11 +4,11 @@
 #include <RumpshiftLogger.h>
 #include <Users.h>
 #include <NetworkManager.h>
-#include "ui/MenuManager.h"
+#include "ui/menus.h"
 
 extern RumpshiftLogger logger;
 extern Users *users;
 extern NetworkManager *network;
-extern MenuManager menus;
+extern Menus menus;
 
 #endif

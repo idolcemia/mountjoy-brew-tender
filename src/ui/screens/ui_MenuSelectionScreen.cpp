@@ -3,6 +3,8 @@
 #include "ui/ui.h"
 #include "ui/events/events.h"
 
+Menus menus;
+
 lv_obj_t *ui_MenuSelectionScreen = nullptr;
 lv_obj_t *ui_MenuDropdown = nullptr;
 lv_obj_t *ui_ConfirmMenuButton = nullptr;
@@ -68,7 +70,7 @@ void ui_MenuSelection_screen_init()
 
     // --- Dropdown ---
     ui_MenuDropdown = lv_dropdown_create(ui_MenuSelectionScreen);
-    lv_dropdown_set_options(ui_MenuDropdown, menus.getMenusDelimit("\n").c_str());
+    lv_dropdown_set_options(ui_MenuDropdown, Menus::getInstance().menus.getMenusDelimit("\n").c_str());
     lv_obj_set_size(ui_MenuDropdown, 314, 50);
     lv_obj_align(ui_MenuDropdown, LV_ALIGN_CENTER, 0, 50);
     lv_obj_add_flag(ui_MenuDropdown, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
@@ -106,8 +108,8 @@ void ui_MenuSelection_screen_init()
     // --- Optional Logo (top-left) ---
     ui_MenuLogo = lv_image_create(ui_MenuSelectionScreen);
     lv_image_set_src(ui_MenuLogo, &ui_img_buildshift_brand_png);
-    lv_obj_align(ui_MenuLogo, LV_ALIGN_TOP_LEFT, 10, 10);
     lv_obj_set_size(ui_MenuLogo, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+    lv_obj_align(ui_MenuLogo, LV_ALIGN_TOP_MID, 0, 10);
 
     // Load the screen
     lv_scr_load(ui_MenuSelectionScreen);
