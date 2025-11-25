@@ -10,9 +10,11 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+#include <lv_conf.h>
+#include <lvgl.h>
+
 #include "Arduino_H7_Video.h"
 #include "Arduino_GigaDisplayTouch.h"
-#include "lvgl.h"
 #include "ui/ui.h"
 
 // --- Internal libs ---
