@@ -3,6 +3,7 @@
 #include "ui/ui.h"
 #include "Globals.h"
 #include "ui/screens/ui_DebugLogScreen.h"
+#include "ui/screens/ui_MenuSelectionScreen.h"
 
 void handleMenuSelectionDropdownEvent(lv_event_t *e)
 {
@@ -11,7 +12,20 @@ void handleMenuSelectionDropdownEvent(lv_event_t *e)
 
 void handleMenuSelectionButtonEvent(lv_event_t *e)
 {
-    logger.info("button pressed");
+    logger.info("Menu selection button pressed");
+
+    if (!ui_MenuDropdown)
+    {
+        return;
+    }
+
+    uint16_t selected = lv_dropdown_get_selected(ui_MenuDropdown);
+    logger.info("Dropdown selected index: " + String(selected));
+
+    ui_MenuSelection_screen_destroy();
+    Menus::getInstance().menus.loadMenu(selected);
+    // lv_obj_clean(lv_scr_act());
+
     // uint16_t selected = getDropdownSelection(e);
 }
 

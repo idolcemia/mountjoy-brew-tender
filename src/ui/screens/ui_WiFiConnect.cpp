@@ -127,7 +127,8 @@ void ui_WiFiConnect_screen_init(void)
     uic_WiFiStatusLabel = ui_WiFiStatusLabel;
 
     // Load this screen
-    lv_scr_load(ui_WiFiConnectScreen);
+    // lv_scr_load(ui_WiFiConnectScreen);
+    lv_scr_load_anim(ui_WiFiConnectScreen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }
 
 void ui_WiFiConnect_screen_destroy(void)

@@ -110,7 +110,9 @@ void ui_MenuSelection_screen_init()
     lv_obj_align(ui_MenuLogo, LV_ALIGN_TOP_MID, 0, 10);
 
     // Load the screen
-    lv_scr_load(ui_MenuSelectionScreen);
+    // lv_scr_load(ui_MenuSelectionScreen);
+    lv_scr_load_anim(ui_MenuSelectionScreen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+
 }
 
 void ui_MenuSelection_screen_destroy()
