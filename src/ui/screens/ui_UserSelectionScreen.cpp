@@ -1,6 +1,7 @@
 #include "ui/ui.h"
 #include "Globals.h"
 #include "ui/events/events.h"
+#include "ui/screens/labels/ui_GlobalLabels.h"
 #include "lvgl.h"
 
 // Exposed UI component pointers
@@ -8,6 +9,7 @@ lv_obj_t *uic_UserDisplayLabel;
 lv_obj_t *uic_SelectUserLabel;
 lv_obj_t *uic_ConfirmUserButton;
 lv_obj_t *uic_ConfirmLabel1;
+lv_obj_t* uic_NetworkWarningLabel;
 lv_obj_t *uic_BSLogo;
 
 lv_obj_t *ui_UserSelectionScreen = nullptr;
@@ -40,57 +42,106 @@ void ui_UserSelection_screen_init(void)
 {
     logger.info("[UI] Initializing User Selection screen");
 
+    /* -------------------------------------------------------
+     *  Screen Base
+     * -----------------------------------------------------*/
     ui_UserSelectionScreen = lv_obj_create(nullptr);
     lv_obj_remove_flag(ui_UserSelectionScreen, LV_OBJ_FLAG_SCROLLABLE);
 
-    // *** Match WiFi Connect screen styling ***
     lv_obj_set_style_bg_color(ui_UserSelectionScreen, lv_color_hex(0xEE7B01), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ui_UserSelectionScreen, 255, LV_PART_MAIN);
     lv_obj_set_style_bg_grad_color(ui_UserSelectionScreen, lv_color_hex(0x2E1A05), LV_PART_MAIN);
     lv_obj_set_style_bg_grad_dir(ui_UserSelectionScreen, LV_GRAD_DIR_VER, LV_PART_MAIN);
 
-    // --- LOGO (centered top) ---
+    bool connected = network->isConnected();
+
+    /* -------------------------------------------------------
+     *  Network Warning Label
+     *  (Created always, updated based on connection state)
+     * -----------------------------------------------------*/
+    uic_NetworkWarningLabel = lv_label_create(ui_UserSelectionScreen);
+
+    if (!connected)
+    {
+        lv_label_set_text(uic_NetworkWarningLabel, "⚠ Network Not Connected");
+        lv_obj_set_style_text_color(uic_NetworkWarningLabel, lv_color_hex(0xFF0000), LV_PART_MAIN);
+    }
+    else
+    {
+        lv_label_set_text(uic_NetworkWarningLabel, "");
+    }
+
+    lv_obj_set_style_text_font(uic_NetworkWarningLabel, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_align(uic_NetworkWarningLabel, LV_ALIGN_TOP_MID, 0, 10);
+
+    /* -------------------------------------------------------
+     *  Logo
+     * -----------------------------------------------------*/
     ui_BSLogo = lv_image_create(ui_UserSelectionScreen);
     lv_image_set_src(ui_BSLogo, &ui_img_buildshift_brand_png);
-    lv_obj_set_align(ui_BSLogo, LV_ALIGN_CENTER);
-    lv_obj_set_y(ui_BSLogo, -157);
+    lv_obj_align(ui_BSLogo, LV_ALIGN_CENTER, 0, -157);
 
-    // --- Title Label ---
+    /* -------------------------------------------------------
+     *  Title Label
+     * -----------------------------------------------------*/
     ui_SelectUserLabel = lv_label_create(ui_UserSelectionScreen);
     lv_label_set_text(ui_SelectUserLabel, "Select User");
+
     lv_obj_set_style_text_color(ui_SelectUserLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
     lv_obj_set_style_text_font(ui_SelectUserLabel, &lv_font_montserrat_48, LV_PART_MAIN);
     lv_obj_set_style_bg_color(ui_SelectUserLabel, lv_color_hex(0x956207), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(ui_SelectUserLabel, 255, LV_PART_MAIN);
     lv_obj_set_style_bg_grad_color(ui_SelectUserLabel, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_bg_grad_dir(ui_SelectUserLabel, LV_GRAD_DIR_VER, LV_PART_MAIN);
-    lv_obj_set_align(ui_SelectUserLabel, LV_ALIGN_CENTER);
-    lv_obj_set_y(ui_SelectUserLabel, -45);
 
-    // --- Dropdown (centered) ---
+    lv_obj_align(ui_SelectUserLabel, LV_ALIGN_CENTER, 0, -45);
+
+    /* -------------------------------------------------------
+     *  User Dropdown
+     * -----------------------------------------------------*/
     ui_Dropdown1 = lv_dropdown_create(ui_UserSelectionScreen);
 
-    _getUsers();
-    String userList = users ? users->getUsersDelimit("\n") : "No users";
+    if (!connected)
+    {
+        lv_obj_add_state(ui_Dropdown1, LV_STATE_DISABLED);
 
-    lv_dropdown_set_options(ui_Dropdown1, userList.c_str());
+        lv_obj_set_style_bg_color(ui_Dropdown1, lv_color_hex(0xBBBBBB), LV_PART_MAIN);
+        lv_obj_set_style_text_color(ui_Dropdown1, lv_color_hex(0x777777), LV_PART_MAIN);
+
+        lv_dropdown_set_options(ui_Dropdown1, "No network");
+    }
+    else
+    {
+        _getUsers();
+        String list = users ? users->getUsersDelimit("\n") : "No users";
+        lv_dropdown_set_options(ui_Dropdown1, list.c_str());
+
+        lv_obj_set_style_bg_color(ui_Dropdown1, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+        lv_obj_set_style_text_color(ui_Dropdown1, lv_color_hex(0x000000), LV_PART_MAIN);
+    }
+
     lv_obj_set_width(ui_Dropdown1, 314);
     lv_obj_set_height(ui_Dropdown1, LV_SIZE_CONTENT);
     lv_obj_align(ui_Dropdown1, LV_ALIGN_CENTER, 0, 50);
-    lv_obj_set_style_bg_color(ui_Dropdown1, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(ui_Dropdown1, 255, LV_PART_MAIN);
 
-    // --- "Selected User" label ---
+    /* -------------------------------------------------------
+     *  Selected User Label
+     * -----------------------------------------------------*/
     ui_UserDisplayLabel = lv_label_create(ui_UserSelectionScreen);
     lv_label_set_text(ui_UserDisplayLabel, "Make a selection");
+
     lv_obj_set_style_text_color(ui_UserDisplayLabel, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_text_font(ui_UserDisplayLabel, &lv_font_montserrat_40, LV_PART_MAIN);
+
     lv_obj_align_to(ui_UserDisplayLabel, ui_Dropdown1, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
-    // --- Confirm Button ---
+    /* -------------------------------------------------------
+     *  Confirm Button
+     * -----------------------------------------------------*/
     ui_ConfirmUserButton = lv_button_create(ui_UserSelectionScreen);
     lv_obj_set_size(ui_ConfirmUserButton, 266, 50);
     lv_obj_align(ui_ConfirmUserButton, LV_ALIGN_CENTER, 0, 150);
+
     lv_obj_set_style_bg_color(ui_ConfirmUserButton, lv_color_hex(0xF0A31E), LV_PART_MAIN);
     lv_obj_set_style_text_color(ui_ConfirmUserButton, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 
@@ -99,18 +150,29 @@ void ui_UserSelection_screen_init(void)
     lv_obj_set_style_text_font(ui_ConfirmLabel1, &lv_font_montserrat_40, LV_PART_MAIN);
     lv_obj_align(ui_ConfirmLabel1, LV_ALIGN_CENTER, 0, 0);
 
-    // --- Events ---
+    /* -------------------------------------------------------
+     *  Events
+     * -----------------------------------------------------*/
     lv_obj_add_event_cb(ui_Dropdown1, ui_event_user_dropdown, LV_EVENT_ALL, nullptr);
     lv_obj_add_event_cb(ui_ConfirmUserButton, ui_event_ConfirmUserButton, LV_EVENT_ALL, nullptr);
 
-    // --- Global exposed pointers ---
+    /* -------------------------------------------------------
+     *  Save Global Pointers
+     * -----------------------------------------------------*/
     uic_UserDisplayLabel = ui_UserDisplayLabel;
     uic_SelectUserLabel = ui_SelectUserLabel;
     uic_ConfirmUserButton = ui_ConfirmUserButton;
     uic_ConfirmLabel1 = ui_ConfirmLabel1;
     uic_BSLogo = ui_BSLogo;
 
-    // Load screen
+    /* -------------------------------------------------------
+     *  Network status label
+     * -----------------------------------------------------*/
+    ui_GlobalLabels::initNetworkStatus(ui_UserSelectionScreen);
+
+    /* -------------------------------------------------------
+     *  Show Screen
+     * -----------------------------------------------------*/
     lv_scr_load(ui_UserSelectionScreen);
 
     logger.info("[UI] User Selection screen loaded successfully");
@@ -132,6 +194,7 @@ void ui_UserSelection_screen_destroy(void)
     ui_ConfirmLabel1 = nullptr;
     ui_BSLogo = nullptr;
 
+    uic_NetworkWarningLabel = nullptr;
     uic_UserDisplayLabel = nullptr;
     uic_SelectUserLabel = nullptr;
     uic_ConfirmUserButton = nullptr;
