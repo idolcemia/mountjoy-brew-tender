@@ -204,6 +204,15 @@ void ui_event_SaveSettingsButton(lv_event_t *e)
 
         lv_label_set_text(ui_SettingsStatusLabel, "Settings Saved!");
 
+        // timer to clear the message after 5 seconds
+        lv_timer_create(
+            [](lv_timer_t *timer)
+            {
+                lv_label_set_text(ui_SettingsStatusLabel, "");
+                lv_timer_del(timer); // Delete timer after it fires once
+            },
+            5000, nullptr); // 5000ms = 5 seconds
+
         // Apply to PID controller
         // handleSaveSettingsButton(e);
     }
@@ -214,6 +223,16 @@ void ui_event_CancelButton(lv_event_t *e)
     if (lv_event_get_code(e) == LV_EVENT_CLICKED)
     {
         lv_label_set_text(ui_SettingsStatusLabel, "Changes Cancelled");
+
+        // timer to clear the message after 5 seconds
+        lv_timer_create(
+            [](lv_timer_t *timer)
+            {
+                lv_label_set_text(ui_SettingsStatusLabel, "");
+                lv_timer_del(timer); // Delete timer after it fires once
+            },
+            5000, nullptr); // 5000ms = 5 seconds
+
         // handleCancelButton(e);
     }
 }
@@ -238,8 +257,8 @@ void ui_TempControl_screen_init(void)
 
     // Create scrollable container for all settings
     lv_obj_t *container = lv_obj_create(ui_TempControlScreen);
-    lv_obj_set_size(container, 720, 360);
-    lv_obj_align(container, LV_ALIGN_CENTER, 0, 10);
+    lv_obj_set_size(container, 720, 320);
+    lv_obj_align(container, LV_ALIGN_CENTER, 0, -20);
     lv_obj_set_style_bg_color(container, lv_color_hex(0x956207), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(container, 200, LV_PART_MAIN);
     lv_obj_set_style_border_width(container, 2, LV_PART_MAIN);
@@ -286,7 +305,7 @@ void ui_TempControl_screen_init(void)
     // Save Button
     ui_SaveSettingsButton = lv_button_create(ui_TempControlScreen);
     lv_obj_set_size(ui_SaveSettingsButton, 180, 50);
-    lv_obj_align(ui_SaveSettingsButton, LV_ALIGN_BOTTOM_LEFT, 50, -15);
+    lv_obj_align(ui_SaveSettingsButton, LV_ALIGN_BOTTOM_MID, -95, -15);
     lv_obj_set_style_bg_color(ui_SaveSettingsButton, lv_color_hex(0x28A745), LV_PART_MAIN);
     lv_obj_set_style_radius(ui_SaveSettingsButton, 8, LV_PART_MAIN);
 
@@ -299,7 +318,7 @@ void ui_TempControl_screen_init(void)
     // Cancel Button
     ui_CancelButton = lv_button_create(ui_TempControlScreen);
     lv_obj_set_size(ui_CancelButton, 180, 50);
-    lv_obj_align(ui_CancelButton, LV_ALIGN_BOTTOM_RIGHT, -50, -15);
+    lv_obj_align(ui_CancelButton, LV_ALIGN_BOTTOM_MID, 95, -15);
     lv_obj_set_style_bg_color(ui_CancelButton, lv_color_hex(0xDC3545), LV_PART_MAIN);
     lv_obj_set_style_radius(ui_CancelButton, 8, LV_PART_MAIN);
 
@@ -312,9 +331,16 @@ void ui_TempControl_screen_init(void)
     // Status Label (between buttons)
     ui_SettingsStatusLabel = lv_label_create(ui_TempControlScreen);
     lv_label_set_text(ui_SettingsStatusLabel, "");
-    lv_obj_set_style_text_color(ui_SettingsStatusLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    // lv_color_hex(0x0000FF)     // Pure blue (bright)
+    //     lv_color_hex(0x007BFF) // Bootstrap blue (nice medium blue)
+    //     lv_color_hex(0x2196F3) // Material Design blue
+    //     lv_color_hex(0x1E90FF) // Dodger blue
+    //     lv_color_hex(0x4169E1) // Royal blue
+    //     lv_color_hex(0x000080) // Navy blue (dark)
+    //     lv_color_hex(0x5B9BD5) // Soft blue
+    lv_obj_set_style_text_color(ui_SettingsStatusLabel, lv_color_hex(0x000080), LV_PART_MAIN);
     lv_obj_set_style_text_font(ui_SettingsStatusLabel, &lv_font_montserrat_20, LV_PART_MAIN);
-    lv_obj_align(ui_SettingsStatusLabel, LV_ALIGN_BOTTOM_MID, 0, -75);
+    lv_obj_align(ui_SettingsStatusLabel, LV_ALIGN_TOP_MID, 0, 175);
 
     // Add event callbacks
     lv_obj_add_event_cb(ui_TargetTempSpinbox, ui_event_TargetTempSpinbox, LV_EVENT_ALL, nullptr);
@@ -327,6 +353,46 @@ void ui_TempControl_screen_init(void)
     lv_obj_add_event_cb(ui_IntegratorSpinbox, ui_event_IntegratorSpinbox, LV_EVENT_ALL, nullptr);
     lv_obj_add_event_cb(ui_SaveSettingsButton, ui_event_SaveSettingsButton, LV_EVENT_ALL, nullptr);
     lv_obj_add_event_cb(ui_CancelButton, ui_event_CancelButton, LV_EVENT_ALL, nullptr);
+
+    // Create a keyboard (initially hidden)
+    lv_obj_t *keyboard = lv_keyboard_create(ui_TempControlScreen);
+    lv_keyboard_set_mode(keyboard, LV_KEYBOARD_MODE_NUMBER);
+    lv_obj_add_flag(keyboard, LV_OBJ_FLAG_HIDDEN); // Start hidden
+    lv_obj_set_size(keyboard, 500, LV_VER_RES);
+    lv_obj_align(keyboard, LV_ALIGN_LEFT_MID, 0, 0);
+
+    // Keyboard event handler to show/hide when spinbox is clicked
+    auto spinbox_click_handler = [](lv_event_t *e)
+    {
+        lv_obj_t *spinbox = (lv_obj_t *)lv_event_get_target(e);
+        lv_obj_t *keyboard = (lv_obj_t *)lv_event_get_user_data(e);
+
+        if (lv_event_get_code(e) == LV_EVENT_CLICKED)
+        {
+            // Show keyboard and associate it with this spinbox
+            lv_keyboard_set_textarea(keyboard, spinbox);
+            lv_obj_remove_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
+        }
+    };
+
+    // Add click events to all spinboxes to show keyboard
+    lv_obj_add_event_cb(ui_TargetTempSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_KpSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_KiSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_KdSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_RampUpSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_RampDownSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_CrossoverSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+    lv_obj_add_event_cb(ui_IntegratorSpinbox, spinbox_click_handler, LV_EVENT_CLICKED, keyboard);
+
+    // Keyboard close button handler
+    lv_obj_add_event_cb(keyboard, [](lv_event_t *e)
+                        {
+    if (lv_event_get_code(e) == LV_EVENT_READY || 
+        lv_event_get_code(e) == LV_EVENT_CANCEL) {
+        lv_obj_t *keyboard = (lv_obj_t *)lv_event_get_target(e);
+        lv_obj_add_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
+    } }, LV_EVENT_ALL, nullptr);
 
     // Global labels (if needed)
     ui_GlobalLabels::initNetworkStatus(ui_TempControlScreen);
