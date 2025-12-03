@@ -10,6 +10,7 @@ extern "C"
 
     // SCREEN: ui_WiFiConnectScreen
     extern void ui_WiFiConnect_screen_init(void);
+    extern void ui_WiFiConnectScreenUpdate();
     extern void ui_WiFiConnect_screen_destroy(void);
     extern lv_obj_t *ui_WiFiConnectScreen;
 

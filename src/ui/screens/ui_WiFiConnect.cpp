@@ -148,6 +148,67 @@ void ui_WiFiConnect_screen_init(void)
     menuManager.setCachedScreen("WiFi Connect", ui_WiFiConnectScreen);
 }
 
+void ui_WiFiConnectScreenUpdate()
+{
+    if (!ui_WiFiConnectScreen)
+        return; // Cached screen was never created
+
+    // --- 1. Refresh WiFi scan results ---
+    lv_label_set_text(ui_WiFiStatusLabel, "Status: Scanning...");
+    lv_dropdown_set_options(ui_WiFiDropdown, "Scanning...");
+
+    // Start a new scan in the background (same pattern as init)
+    LvglHelperUtils::Spinner *spinner =
+        new LvglHelperUtils::Spinner(
+            LvglHelperUtils::createLvglSpinner(ui_WiFiConnectScreen, 60));
+
+    lv_timer_create(
+        [](lv_timer_t *t)
+        {
+            auto *sp = (LvglHelperUtils::Spinner *)lv_timer_get_user_data(t);
+
+            int n = WiFi.scanNetworks();
+            String opts;
+
+            if (n > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    opts += WiFi.SSID(i);
+                    if (i < n - 1)
+                        opts += "\n";
+                }
+            }
+            else
+            {
+                opts = "No networks found";
+            }
+
+            lv_dropdown_set_options(ui_WiFiDropdown, opts.c_str());
+            lv_label_set_text(ui_WiFiStatusLabel, "Status: Done");
+
+            LvglHelperUtils::deleteLvglSpinner(*sp);
+            delete sp;
+
+            lv_timer_del(t);
+        },
+        150, spinner);
+
+    // --- 2. Ensure event callbacks still exist (LVGL sometimes drops them on cached screens) ---
+    lv_obj_remove_event_cb(ui_WiFiDropdown, ui_event_wifi_dropdown);
+    lv_obj_add_event_cb(ui_WiFiDropdown, ui_event_wifi_dropdown, LV_EVENT_ALL, nullptr);
+
+    lv_obj_remove_event_cb(ui_ConnectWiFiButton, ui_event_ConnectWiFiButton);
+    lv_obj_add_event_cb(ui_ConnectWiFiButton, ui_event_ConnectWiFiButton, LV_EVENT_ALL, nullptr);
+
+    // --- 3. Reset button enabled state or UI-specific things ---
+    lv_obj_clear_state(ui_ConnectWiFiButton, LV_STATE_DISABLED);
+
+    // --- 4. Update global labels if needed ---
+    ui_GlobalLabels::updateNetworkStatus();
+    ui_GlobalLabels::updateUserSelectionLabel();
+}
+
 void ui_WiFiConnect_screen_destroy(void)
 {
     if (ui_WiFiConnectScreen)
