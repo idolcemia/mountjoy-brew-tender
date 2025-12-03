@@ -28,7 +28,8 @@ void handleMenuSelectionButtonEvent(lv_event_t *e)
     String selectedText = String(buf);
     logger.info("Dropdown selected text: " + selectedText);
 
-    menuManager.loadMenu(selectedText);
+    menuManager.queueMenu(selectedText);
+    // menuManager.loadMenu(selectedText);
     // ui_MenuSelection_screen_destroy();
     // Menus::getInstance().menus.loadMenu(selectedText);
     // lv_obj_clean(lv_scr_act());

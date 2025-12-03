@@ -56,11 +56,22 @@ lv_obj_t *uic_SaveSettingsButton = nullptr;
 lv_obj_t *uic_CancelButton = nullptr;
 lv_obj_t *uic_SettingsStatusLabel = nullptr;
 
+struct TooltipData
+{
+    lv_obj_t *tooltip;
+    lv_obj_t *screen;
+};
+
 // Helper function to create a row with label and spinbox
 static lv_obj_t *create_setting_row(
-    lv_obj_t *parent, const char *label_text,
-    int32_t range_min, int32_t range_max,
-    int32_t initial_value, uint8_t digit_count)
+    lv_obj_t *parent,
+    const char *label_text,
+    int32_t range_min,
+    int32_t range_max,
+    int32_t initial_value,
+    uint8_t digit_count,
+    const char *tooltip_text,
+    lv_obj_t *screen)
 {
     // Create container for this row
     lv_obj_t *row = lv_obj_create(parent);
@@ -69,6 +80,44 @@ static lv_obj_t *create_setting_row(
     lv_obj_set_style_bg_opa(row, 0, LV_PART_MAIN);
     lv_obj_set_style_border_width(row, 0, LV_PART_MAIN);
     lv_obj_set_style_pad_all(row, 0, LV_PART_MAIN);
+
+    // Create tooltip (initially hidden)
+    lv_obj_t *tooltip = lv_obj_create(screen);
+    lv_obj_set_size(tooltip, 350, 200);
+    lv_obj_align(tooltip, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_set_style_bg_color(tooltip, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(tooltip, 250, LV_PART_MAIN);
+    lv_obj_set_style_border_width(tooltip, 3, LV_PART_MAIN);
+    lv_obj_set_style_border_color(tooltip, lv_color_hex(0x007BFF), LV_PART_MAIN);
+    lv_obj_set_style_radius(tooltip, 15, LV_PART_MAIN);
+    lv_obj_set_style_shadow_width(tooltip, 20, LV_PART_MAIN);
+    lv_obj_set_style_shadow_color(tooltip, lv_color_hex(0x000000), LV_PART_MAIN);
+    lv_obj_add_flag(tooltip, LV_OBJ_FLAG_HIDDEN);
+
+    lv_obj_t *tooltip_label = lv_label_create(tooltip);
+    lv_label_set_text(tooltip_label, tooltip_text);
+    lv_label_set_long_mode(tooltip_label, LV_LABEL_LONG_WRAP);
+    lv_obj_set_width(tooltip_label, 320);
+    lv_obj_set_style_text_color(tooltip_label, lv_color_hex(0x000000), LV_PART_MAIN);
+    lv_obj_set_style_text_font(tooltip_label, &lv_font_montserrat_18, LV_PART_MAIN);
+    lv_obj_center(tooltip_label);
+
+    // Allocate tooltip data on heap
+    TooltipData *tt_data = new TooltipData{tooltip, screen};
+
+    // Add long press event to show tooltip
+    lv_obj_add_event_cb(row, [](lv_event_t *e)
+                        {
+        TooltipData *data = (TooltipData*)lv_event_get_user_data(e);
+        lv_event_code_t code = lv_event_get_code(e);
+        
+        if (code == LV_EVENT_LONG_PRESSED) {
+            lv_obj_remove_flag(data->tooltip, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_move_foreground(data->tooltip);
+        }
+        else if (code == LV_EVENT_RELEASED || code == LV_EVENT_PRESS_LOST) {
+            lv_obj_add_flag(data->tooltip, LV_OBJ_FLAG_HIDDEN);
+        } }, LV_EVENT_ALL, tt_data);
 
     // Label on the left
     lv_obj_t *label = lv_label_create(row);
@@ -269,38 +318,86 @@ void ui_TempControl_screen_init(void)
     lv_obj_set_style_pad_all(container, 10, LV_PART_MAIN);
     lv_obj_set_style_pad_row(container, 5, LV_PART_MAIN);
 
-    // Create all setting rows
+    // Create all setting rows with tooltips
     ui_TargetTempSpinbox = create_setting_row(
-        container, "Target Temp (°C):",
-        0, 1500, (int32_t)(g_TempSettings.targetTemp * 10), 4);
+        container,
+        "Target Temp (°C):",
+        0,
+        1500,
+        (int32_t)(g_TempSettings.targetTemp * 10),
+        4,
+        "Target temperature for the pasteurization chamber. Typical range: 75-85°C for coffee pasteurization.",
+        ui_TempControlScreen);
 
     ui_KpSpinbox = create_setting_row(
-        container, "Kp (P Gain):",
-        0, 10000, (int32_t)(g_TempSettings.kp * 100), 5);
+        container,
+        "Kp (P Gain):",
+        0,
+        10000,
+        (int32_t)(g_TempSettings.kp * 100),
+        5,
+        "Proportional gain. Higher values = faster response but may cause overshooting. Start with 1.0-3.0.",
+        ui_TempControlScreen);
 
     ui_KiSpinbox = create_setting_row(
-        container, "Ki (I Gain):",
-        0, 10000, (int32_t)(g_TempSettings.ki * 1000), 5);
+        container,
+        "Ki (I Gain):",
+        0,
+        10000,
+        (int32_t)(g_TempSettings.ki * 1000),
+        5,
+        "Integral gain. Eliminates steady-state error. Too high causes oscillation. Start with 0.1-0.2.",
+        ui_TempControlScreen);
 
     ui_KdSpinbox = create_setting_row(
-        container, "Kd (D Gain):",
-        0, 10000, (int32_t)(g_TempSettings.kd * 100), 5);
+        container,
+        "Kd (D Gain):",
+        0,
+        10000,
+        (int32_t)(g_TempSettings.kd * 100),
+        5,
+        "Derivative gain. Reduces overshoot and improves stability. Start with 0.5-2.0.",
+        ui_TempControlScreen);
 
     ui_RampUpSpinbox = create_setting_row(
-        container, "Ramp Up (°C/min):",
-        0, 500, (int32_t)(g_TempSettings.rampUp * 10), 4);
+        container,
+        "Ramp Up (°C/min):",
+        0,
+        500,
+        (int32_t)(g_TempSettings.rampUp * 10),
+        4,
+        "Maximum heating rate. Limits how fast temperature can increase. Typical: 5-15°C/min.",
+        ui_TempControlScreen);
 
     ui_RampDownSpinbox = create_setting_row(
-        container, "Ramp Down (°C/min):",
-        -500, 0, (int32_t)(g_TempSettings.rampDown * 10), 4);
+        container,
+        "Ramp Down (°C/min):",
+        -500,
+        0,
+        (int32_t)(g_TempSettings.rampDown * 10),
+        4,
+        "Maximum cooling rate (negative value). Limits how fast temperature can decrease. Typical: -5 to -15°C/min.",
+        ui_TempControlScreen);
 
     ui_CrossoverSpinbox = create_setting_row(
-        container, "Crossover (°C):",
-        0, 500, (int32_t)(g_TempSettings.crossover * 10), 4);
+        container,
+        "Crossover (°C):",
+        0,
+        500,
+        (int32_t)(g_TempSettings.crossover * 10),
+        4,
+        "Distance from target where ramping transitions to holding. Larger value = smoother approach. Typical: 5-15°C.",
+        ui_TempControlScreen);
 
     ui_IntegratorSpinbox = create_setting_row(
-        container, "Integrator Limit:",
-        0, 5000, (int32_t)(g_TempSettings.integratorLimit * 10), 5);
+        container,
+        "Integrator Limit:",
+        0,
+        5000,
+        (int32_t)(g_TempSettings.integratorLimit * 10),
+        5,
+        "Maximum integrator accumulation (anti-windup). Prevents excessive buildup. Typical: 50-150.",
+        ui_TempControlScreen);
 
     // Save Button
     ui_SaveSettingsButton = lv_button_create(ui_TempControlScreen);
@@ -400,6 +497,8 @@ void ui_TempControl_screen_init(void)
 
     // Load screen
     lv_scr_load(ui_TempControlScreen);
+
+    menuManager.setCachedScreen("Temp Control", ui_TempControlScreen);
 }
 
 void ui_TempControl_screen_destroy(void)

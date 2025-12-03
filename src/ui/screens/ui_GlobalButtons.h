@@ -43,8 +43,8 @@ namespace ui_GlobalButtons
 
                 logger.info("Global Home button pressed");
                 // Call your home screen init function
-                // Menus::getInstance().menus.loadMenu("Menu Selection");
-                menuManager.loadMenu("Menu Selection");
+                // menuManager.loadMenu("Menu Selection");
+                menuManager.queueMenu("Menu Selection");
             },
             LV_EVENT_CLICKED, nullptr);
     }

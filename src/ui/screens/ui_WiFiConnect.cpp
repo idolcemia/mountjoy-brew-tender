@@ -144,6 +144,8 @@ void ui_WiFiConnect_screen_init(void)
 
     // Load screen
     lv_scr_load(ui_WiFiConnectScreen);
+
+    menuManager.setCachedScreen("WiFi Connect", ui_WiFiConnectScreen);
 }
 
 void ui_WiFiConnect_screen_destroy(void)

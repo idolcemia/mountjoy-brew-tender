@@ -60,7 +60,10 @@ void ui_update_network_status()
 void ui_MenuSelection_screen_start()
 {
     // Menus::getInstance().menus.loadMenu("Menu Selection");
-    menuManager.loadMenu("Menu Selection");
+    // menuManager.loadMenu("Menu Selection");
+    menuManager.queueMenu("Menu Selection");
+    lv_timer_handler();
+    menuManager.setCachedScreen("Menu Selection", ui_MenuSelectionScreen);
 }
 
 // Initialize the screen

@@ -31,6 +31,7 @@ void initGlobals()
 
 void initMenus()
 {
+    logger.info("[Globals] Running init menus.");
     menuManager.setLogger(&logger);
     menuManager.addMenu("Menu Selection", ui_MenuSelection_screen_init, ui_MenuSelection_screen_destroy);
     menuManager.addMenu("WiFi Connect", ui_WiFiConnect_screen_init, ui_WiFiConnect_screen_destroy);

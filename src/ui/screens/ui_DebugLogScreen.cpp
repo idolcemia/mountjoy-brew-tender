@@ -88,6 +88,8 @@ void ui_DebugLog_screen_init()
             lv_label_set_text(ui_LogLabel, buffer.c_str());
             lv_obj_scroll_to_y(ui_LogContainer, LV_COORD_MAX, LV_ANIM_OFF);
         });
+    
+    menuManager.setCachedScreen("Debug Log", ui_DebugLogScreen);
 }
 
 void ui_DebugLog_screen_destroy()

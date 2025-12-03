@@ -13,6 +13,7 @@ extern "C"
 
     // SCREEN: ui_UserSelectionScreen
     extern void ui_UserSelection_screen_init(void);
+    extern void ui_UserSelectionScreenUpdate();
     extern void ui_UserSelection_screen_destroy(void);
     extern lv_obj_t *ui_UserSelectionScreen;
     extern void ui_event_user_dropdown(lv_event_t *e);

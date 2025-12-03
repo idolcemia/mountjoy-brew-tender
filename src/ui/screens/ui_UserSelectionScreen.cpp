@@ -185,6 +185,105 @@ void ui_UserSelection_screen_init(void)
     lv_scr_load(ui_UserSelectionScreen);
 
     logger.info("[UI] User Selection screen loaded successfully");
+
+    menuManager.setCachedScreen("User Selection", ui_UserSelectionScreen);
+}
+
+void ui_UserSelectionScreenUpdate()
+{
+    if (!ui_UserSelectionScreen)
+        return;
+
+    bool connected = network->isConnected();
+
+    /* -------------------------------------------------------
+     *  Update Network Warning Label
+     * -----------------------------------------------------*/
+    if (uic_NetworkWarningLabel)
+    {
+        if (!connected)
+        {
+            lv_label_set_text(uic_NetworkWarningLabel, "⚠ Network Not Connected");
+            lv_obj_set_style_text_color(uic_NetworkWarningLabel, lv_color_hex(0xFF0000), LV_PART_MAIN);
+        }
+        else
+        {
+            lv_label_set_text(uic_NetworkWarningLabel, "");
+        }
+    }
+
+    /* -------------------------------------------------------
+     *  Update Dropdown
+     * -----------------------------------------------------*/
+    if (ui_UserDropdown)
+    {
+        if (!connected)
+        {
+            lv_obj_add_state(ui_UserDropdown, LV_STATE_DISABLED);
+            lv_dropdown_set_options(ui_UserDropdown, "No network");
+
+            lv_obj_set_style_bg_color(ui_UserDropdown, lv_color_hex(0xBBBBBB), LV_PART_MAIN);
+            lv_obj_set_style_text_color(ui_UserDropdown, lv_color_hex(0x777777), LV_PART_MAIN);
+        }
+        else
+        {
+            lv_obj_clear_state(ui_UserDropdown, LV_STATE_DISABLED);
+
+            // Refresh users (if necessary)
+            if (!users || users->getUserCount() == 0)
+            {
+                logger.info("[UI] Updating user list (network connected)");
+                _getUsers();
+            }
+
+            String list = users ? users->getUsersDelimit("\n") : "No users";
+            lv_dropdown_set_options(ui_UserDropdown, list.c_str());
+
+            lv_obj_set_style_bg_color(ui_UserDropdown, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+            lv_obj_set_style_text_color(ui_UserDropdown, lv_color_hex(0x000000), LV_PART_MAIN);
+        }
+    }
+
+    /* -------------------------------------------------------
+     *  Update Selected User Display Label
+     * -----------------------------------------------------*/
+    if (ui_UserDisplayLabel)
+    {
+        int selected = lv_dropdown_get_selected(ui_UserDropdown);
+
+        if (!connected)
+        {
+            lv_label_set_text(ui_UserDisplayLabel, "No network");
+        }
+        else if (!users || users->getUserCount() == 0)
+        {
+            lv_label_set_text(ui_UserDisplayLabel, "No users");
+        }
+        else
+        {
+            String username = users->getUsers()[selected].name;
+            lv_label_set_text(ui_UserDisplayLabel, username.c_str());
+        }
+    }
+
+    /* -------------------------------------------------------
+     *  Enable/Disable Confirm Button
+     * -----------------------------------------------------*/
+    if (ui_ConfirmUserButton)
+    {
+        if (!connected || !users || users->getUserCount() == 0)
+            lv_obj_add_state(ui_ConfirmUserButton, LV_STATE_DISABLED);
+        else
+            lv_obj_clear_state(ui_ConfirmUserButton, LV_STATE_DISABLED);
+    }
+
+    /* -------------------------------------------------------
+     *  Update global labels (network + user)
+     * -----------------------------------------------------*/
+    ui_GlobalLabels::updateNetworkStatus();
+    ui_GlobalLabels::updateUserSelectionLabel();
+
+    logger.info("[UI] User Selection screen updated");
 }
 
 // =========================
