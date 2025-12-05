@@ -29,15 +29,14 @@ void ui_init(void)
     lv_disp_t *dispp = lv_display_get_default();
     lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
-    ui_MenuSelection_screen_start();
-    // ui_MenuSelection_screen_init();
-    // ui_UserSelection_screen_init();
-    // ui_WiFiConnect_screen_init();
-    // ui_Screen2_screen_init();
+
+    // This should be used when we build up the menu selection
+    // ui_MenuSelection_screen_start();
+    ui_ManualControl_screen_init();
 
     ui____initial_actions0 = lv_obj_create(NULL);
-    // lv_disp_load_scr(ui_UserSelectionScreen);
-    lv_disp_load_scr(ui_MenuSelectionScreen);
+    // lv_disp_load_scr(ui_MenuSelectionScreen);
+    lv_disp_load_scr(ui_ManualControlScreen);
 }
 
 void ui_destroy(void)

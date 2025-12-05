@@ -18,6 +18,7 @@ NetworkManager *network =
         &logger);
 WiFiClientWrapper *wifiClient = nullptr;
 MenuManager menuManager;
+PasteurizerRelays pasteurizerRelays(2, 3, 4, 5); // on the arduino shield, 4, 7, 8, 12
 
 // Global labels
 GlobalLabels gLabels;

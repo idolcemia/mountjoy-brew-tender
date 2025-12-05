@@ -7,6 +7,7 @@
 #include <WiFi/WiFiNetworkManager.h>
 #include "lvgl.h"
 #include "config.h"
+#include "PasteurizerRelays.h"
 
 // -- Menus --
 #include <MenuManager.h>
@@ -29,6 +30,7 @@ extern Users::User currentUser;
 extern NetworkManager *network;
 extern WiFiClientWrapper *wifiClient;
 extern MenuManager menuManager;
+extern PasteurizerRelays pasteurizerRelays;
 
 namespace PasteurizerMenu
 {
