@@ -31,9 +31,34 @@ float TemperatureSensor::readResistance()
         return NAN;
     }
 
-    // Calculate thermistor resistance
-    // Circuit: Vcc - Rfixed - A0 - Thermistor - GND
-    float rTherm = rFixed * ((float)adcMax / (float)adc - 1.0);
+    // Calculate thermistor resistance based on voltage divider configuration
+    //
+    // The voltage divider can be wired two ways, and the formula changes accordingly:
+    //
+    // CONFIGURATION 1: Thermistor on BOTTOM (between analog pin and GND)
+    //   Vcc --- [Fixed Resistor] --- [Analog Pin] --- [Thermistor] --- GND
+    //   Formula: R_therm = R_fixed × (ADC_max / ADC_reading - 1)
+    //   Behavior: Temperature ↑ → Resistance ↓ → Voltage ↓ → ADC ↓
+    //
+    // CONFIGURATION 2: Thermistor on TOP (between Vcc and analog pin)
+    //   Vcc --- [Thermistor] --- [Analog Pin] --- [Fixed Resistor] --- GND
+    //   Formula: R_therm = R_fixed × (ADC_reading / (ADC_max - ADC_reading))
+    //   Behavior: Temperature ↑ → Resistance ↓ → Voltage ↑ → ADC ↑
+    //
+    // Currently using: CONFIGURATION 2 (Thermistor on top)
+    //
+    // TODO: Add constructor parameter to specify thermistor position
+    //   Example: TemperatureSensor(pin, rFixed, r0, t0, beta, THERMISTOR_TOP)
+    //   or add enum: enum ThermistorPosition { THERMISTOR_BOTTOM, THERMISTOR_TOP };
+    //   This would allow the class to automatically use the correct formula based on
+    //   how the user physically wired their circuit, making the library more flexible
+    //   and preventing calculation errors from mismatched wiring configurations.
+
+    // Circuit: Vcc - Rfixed - A0 - Thermistor - GND (CONFIGURATION 1)
+    // float rTherm = rFixed * ((float)adcMax / (float)adc - 1.0);
+
+    // Circuit: Vcc - Thermistor - A0 - Rfixed - GND (CONFIGURATION 2)
+    float rTherm = rFixed * ((float)adc / ((float)adcMax - (float)adc));
 
     return rTherm;
 }
@@ -48,7 +73,7 @@ float TemperatureSensor::getTempC()
     }
 
     // Beta formula: T(K) = 1 / (1/T0 + (1/B) * ln(R/R0))
-    float invT = 1.0 / t0 + (1.0 / beta) * log(rTherm / r0);
+    float invT = 1.0 / t0 - (1.0 / beta) * log(rTherm / r0);
     float tKelvin = 1.0 / invT;
     float tCelsius = tKelvin - 273.15;
 

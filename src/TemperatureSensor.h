@@ -4,8 +4,6 @@
 #include <Arduino.h>
 
 /**
- * TemperatureSensor Class
- *
  * Reads temperature from an NTC thermistor using the Beta (β) parameter equation.
  *
  * CIRCUIT CONFIGURATION:
@@ -172,3 +170,34 @@ public:
  * - Readings unstable: Add a 0.1µF capacitor across thermistor terminals
  * - Need better accuracy: Use 4-wire measurement or consider an RTD like PT1000
  */
+
+// /** Reads temperature from an NTC (Negative Temperature Coefficient) thermistor 
+//  * using the Beta (β) parameter equation.
+//  * 
+//  * WHAT IS AN NTC THERMISTOR?
+//  * An NTC thermistor is a temperature-sensitive resistor whose resistance DECREASES
+//  * as temperature INCREASES. This is the opposite of most materials, and makes NTC
+//  * thermistors ideal for temperature sensing applications.
+//  * 
+//  * Key characteristics:
+//  * - Resistance drops predictably as temperature rises
+//  * - "Negative" = resistance goes down when temp goes up
+//  * - Most common type of thermistor for temperature measurement (90%+ of market)
+//  * - Used in: HVAC systems, appliances, 3D printers, automotive, medical devices
+//  * 
+//  * HOW TO VERIFY YOU HAVE AN NTC THERMISTOR:
+//  * 1. Measure resistance at room temperature with a multimeter
+//  * 2. Gently pinch the thermistor between your fingers for 30-60 seconds to warm it
+//  * 3. Measure resistance again while holding it
+//  * 4. If resistance DECREASED, it's NTC (correct for this class)
+//  *    If resistance INCREASED, it's PTC (this class won't work - PTC is rare in temp sensing)
+//  * 
+//  * Example: 12.6kΩ at 25°C → 10kΩ at 30°C (typical NTC behavior)
+//  * 
+//  * CIRCUIT CONFIGURATION:
+//  * The thermistor is configured in a voltage divider:
+//  *   Vcc (5V) --- [Fixed Resistor] --- [Analog Pin] --- [Thermistor] --- GND
+//  * 
+//  * As the thermistor heats up and its resistance drops, more voltage appears 
+//  * across the fixed resistor, and the Arduino reads a higher ADC value.
+//  * /
