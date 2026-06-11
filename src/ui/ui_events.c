@@ -4,5 +4,3 @@
 // Project name: Brew Tender v.0.1
 
 #include "ui.h"
-
-

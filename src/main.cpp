@@ -72,18 +72,9 @@ void setup()
 void loop()
 {
     lv_timer_handler();
-    // ui_GlobalLabels::updateNetworkStatus();
-    // ui_GlobalLabels::networkChecked();
 
-    // Only update once LVGL is stable
-    // Maybe move this to particular screens
-    // if (millis() > 3000) // wait 3s after boot
-    // {
-    //     Diagnostic::updateDefault();
-    // }
-
-    // Update presdsure and flow periodically
     unsigned long currentMillis = millis();
+
     if (currentMillis - lastSensorUpdate >= SENSOR_UPDATE_INTERVAL)
     {
         lastSensorUpdate = currentMillis;

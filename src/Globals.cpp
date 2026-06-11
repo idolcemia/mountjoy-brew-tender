@@ -25,14 +25,14 @@ NetworkManager *network =
 WiFiClientWrapper *wifiClient = nullptr;
 MenuManager menuManager;
 PasteurizerRelays pasteurizerRelays(4, 5, 6, 7); // on the arduino shield, 4, 7, 8, 12
-TemperatureSensor chamberTemperatureSensor(A0);
 
 
 FillControl fillControl(A5, 5, 4.5); // Sensor pin, valve pin, fill level target in liters (according to sensor)
 // A fill level of 8.5 liters yields 44 liters total yield.
 
-PressureControl pressureControl(2, 3, 4, 6 );
+PressureControl pressureControl(2, 3, 4, 6);
 
+FlowSensor_UFM01 flowSensor(8); // Sensor pin, 1-wire flow sensor
 
 // Global labels
 GlobalLabels gLabels;
@@ -43,11 +43,10 @@ void initGlobals()
     initWiFiClient();
     initUsers();
 
-    pasteurizerRelays.begin();
-    chamberTemperatureSensor.begin();
 
     fillControl.begin();
     pressureControl.begin();
+    flowSensor.begin();
 }
 
 void initMenus()
