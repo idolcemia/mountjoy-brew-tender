@@ -12,7 +12,7 @@
 #include "GigaAudio.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include "FlowSensor_UFM01.h"
+
 
 #include "FillControl.h"
 #include "PressureControl.h"
@@ -39,11 +39,11 @@ extern NetworkManager *network;
 extern WiFiClientWrapper *wifiClient;
 extern MenuManager menuManager;
 extern PasteurizerRelays pasteurizerRelays;
-
+extern TemperatureSensor chamberTemperatureSensor;
+extern TemperatureSensor kettleTemperatureSensor;
 extern GigaAudio audio;
 extern FillControl fillControl;
 extern PressureControl pressureControl;
-extern FlowSensor_UFM01 flowSensor;
 
 namespace PasteurizerMenu
 {
