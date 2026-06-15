@@ -27,13 +27,11 @@ MenuManager menuManager;
 PasteurizerRelays pasteurizerRelays(4, 5, 6, 7); // on the arduino shield, 4, 7, 8, 12
 TemperatureSensor chamberTemperatureSensor(A0);
 
+FillControl fillControl(5, 105, 707.0f); // valve pin, target distance (mm), cavity surface area cm^2, fill amount liters
 
-FillControl fillControl(A5, 5, 4.5); // Sensor pin, valve pin, fill level target in liters (according to sensor)
-// A fill level of 8.5 liters yields 44 liters total yield.
+PressureControl pressureControl(2, 3, 4, 6);
 
-PressureControl pressureControl(2, 3, 4, 6 );
-
-
+DistanceSensor distanceSensor;
 // Global labels
 GlobalLabels gLabels;
 
@@ -48,6 +46,7 @@ void initGlobals()
 
     fillControl.begin();
     pressureControl.begin();
+    distanceSensor.begin();
 }
 
 void initMenus()

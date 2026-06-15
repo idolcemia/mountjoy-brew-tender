@@ -32,8 +32,7 @@
 
 #include "FillControl.h"
 #include "PressureControl.h"
-
-                                 
+#include "DistanceSensor.h"
 
 Arduino_H7_Video Display(800, 480, GigaDisplayShield);
 Arduino_GigaDisplayTouch TouchDetector;
@@ -41,10 +40,7 @@ Arduino_GigaDisplayTouch TouchDetector;
 WiFiClientWrapper testClient;
 
 unsigned long lastSensorUpdate = 0;
-const unsigned long SENSOR_UPDATE_INTERVAL = 1000;
-
-
-
+const unsigned long SENSOR_UPDATE_INTERVAL = 50;
 
 void _log();
 
@@ -65,8 +61,6 @@ void setup()
     Display.begin();
     TouchDetector.begin();
     ui_init();
-
-    
 }
 
 void loop()
@@ -88,21 +82,16 @@ void loop()
     {
         lastSensorUpdate = currentMillis;
 
+        logger.info("Current Distance: " + String(distanceSensor.getDistance()) + "mm ");
 
-        logger.info("Fill Volume: " + String(fillControl.getFillVolume()) + " L ");
-
-    switch (fillControl._state)
+        switch (fillControl._state)
         {
         default:
         case FillControlState::FILL_RESET:
             fillControl.reset();
             break;
         case FillControlState::FILL_RUN:
-            fillControl.getFillVolume(); // Get current volume, according to sensor.
-            if (fillControl.getFillVolume() >= fillControl._fillAmount) {
-                fillControl.reset();
-
-            }   
+            fillControl.update();
             break;
         case FillControlState::FILL_PAUSE:
             fillControl.stop();
@@ -118,11 +107,13 @@ void loop()
         case PressureControlState::PC_RESET:
             pressureControl.reset();
             break;
+
         case PressureControlState::PC_RUN:
 
-            if (pressureControl.overPressure()) {
-                pressureControl.reset();
-            }   
+            /*     if (pressureControl.overPressure()) {
+                     pressureControl.reset();
+                 }
+     */
             break;
         case PressureControlState::PC_PAUSE:
             pressureControl.stop();

@@ -12,7 +12,7 @@
 #include "GigaAudio.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include "DistanceSensor.h"
 
 #include "FillControl.h"
 #include "PressureControl.h"
@@ -44,6 +44,7 @@ extern TemperatureSensor kettleTemperatureSensor;
 extern GigaAudio audio;
 extern FillControl fillControl;
 extern PressureControl pressureControl;
+extern DistanceSensor distanceSensor;
 
 namespace PasteurizerMenu
 {

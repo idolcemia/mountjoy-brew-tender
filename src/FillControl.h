@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
+#include "DistanceSensor.h"
 
 enum FillControlState
 {
@@ -22,26 +23,14 @@ enum FillControlState
 class FillControl
 {
 private:
-    static const int FILL_AVG_WINDOW = 10; // Number of recent readings to average for smoothing
-
-    int _sensorPin;
+    // The volume of liquid that has been filled, in liters.
+    float _volumeLiters;
     int _valvePin;
+    int _targetDistance;
+    float _surfaceAreaCm2;
+    int _startDistance;
+    bool _hasStartDistance;
 
-
-    float _recentVolumes[FILL_AVG_WINDOW] = {0.0f}; // Circular buffer to hold recent volume readings for smoothing
-    int _recentVolumeIndex = 0;
-    int _recentVolumeCount = 0;
-    float _recentVolumeSum = 0.0f;
-
-  
- 
-   
-    #define SERIES_RESISTOR 560
-    #define ZERO_VOLUME_RESISTANCE 540 // Resistance reading when the tube is empty.  This will depend on your specific sensor and setup, so you should measure it with an empty tube to get an accurate value.
-    #define CALIBRATION_RESISTANCE 1800 // Resistance at 27.5 cm of rise.
-    #define CALIBRATION_VOLUME 19.23   // Volume in liters at 27.5 cm of rise.  Assuing a 30cm diameter tube,
-
-                                        // 699 cubic centimeters per cm of rise, so 27.5 cm * 699 cc/cm = 19227.5 cc = 19.23 liters.  Adjust the calibration volume if your tube diameter is different.
 
 public:
     /**
@@ -51,7 +40,7 @@ public:
 
     FillControlState _state = FILL_DONE;
     unsigned long _startTimeMillis = 0;
-    float _fillAmount;
+    float _fillAmount = 0.0f;
 
     // Actual fill time is 56 seconds.
     unsigned long _fillTimeMillis = 0; // Will be calculated in begin()
@@ -59,16 +48,21 @@ public:
     void begin();
 
     FillControl(
-        int sensorPin,
         int valvePin,
-        float fillAmount = 0) : _sensorPin(sensorPin), _valvePin(valvePin), _fillAmount(fillAmount)
+        int targetDistance,
+        float surfaceAreaCm2 = 707.0f,
+        float fillAmount = 0.0f)
+        : _valvePin(valvePin),
+          _targetDistance(targetDistance),
+          _surfaceAreaCm2(surfaceAreaCm2),
+          _startDistance(DistanceSensor::ERROR_DISTANCE),
+          _hasStartDistance(false),
+          _fillAmount(fillAmount)
     {
     }
 
-    float getFillVolume() ;
-    float readResistance(int pin, int seriesResistance);
-    float resistanceToVolume(float resistance, float zeroResistance, float calResistance, float calVolume);
-    
+    float getFillVolume();
+
     /**
      * Start filling
      */
@@ -85,14 +79,13 @@ public:
     void reset();
 
     /**
-     * Interrupt Service Routine to count pulses from the flow sensor
+     * Update the fill control state
      */
-    void isr();
-
-    // Interrupt service routine
-    static void isr_wrapper(void);
+    void update();
 
     void updateUI();
+
+    int getDistance();
 };
 
 #endif // FILL_CONTROL_H
