@@ -3,15 +3,14 @@
 // LVGL version: 8.3.11
 // Project name: Brew Tender v.1.2
 
-#ifndef _UI_EVENTS_H
-#define _UI_EVENTS_H
+#ifndef _BREW_TENDER_V_1_2_UI_COMP_HOOK_H
+#define _BREW_TENDER_V_1_2_UI_COMP_HOOK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void switchPressurizeChanged(lv_event_t * e);
-void switchFillChanged(lv_event_t * e);
+void ui_comp_Switch1_create_hook(lv_obj_t * comp);
 
 #ifdef __cplusplus
 } /*extern "C"*/

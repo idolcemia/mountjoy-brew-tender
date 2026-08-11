@@ -101,6 +101,6 @@ float PressureControl::updateUI()
 {
     // Placeholder until dedicated pressure UI widgets are connected.
     lv_label_set_text(ui_labelPSI, String(getPressure()).c_str());
-    lv_bar_set_value(ui_sliderPressurize, int(getPressure()), LV_ANIM_OFF);
+    //  lv_bar_set_value(ui_sliderPressurize, int(getPressure()), LV_ANIM_OFF);
     return static_cast<float>(getPressure());
 }

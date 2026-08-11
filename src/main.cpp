@@ -40,7 +40,7 @@ Arduino_GigaDisplayTouch TouchDetector;
 WiFiClientWrapper testClient;
 
 unsigned long lastSensorUpdate = 0;
-const unsigned long SENSOR_UPDATE_INTERVAL = 50;
+const unsigned long SENSOR_UPDATE_INTERVAL = 500;
 
 void _log();
 

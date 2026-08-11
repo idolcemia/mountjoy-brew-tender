@@ -3,14 +3,8 @@
 // LVGL version: 8.3.11
 // Project name: Brew Tender v.1.2
 
-#include "ui.h"
+#include "../ui.h"
 
-void switchPressurizeChanged(lv_event_t * e)
+void ui_comp_Switch1_create_hook(lv_obj_t * comp)
 {
-	// Your code here
-}
-
-void switchFillChanged(lv_event_t * e)
-{
-	// Your code here
 }
