@@ -40,7 +40,7 @@ Arduino_GigaDisplayTouch TouchDetector;
 WiFiClientWrapper testClient;
 
 unsigned long lastSensorUpdate = 0;
-const unsigned long SENSOR_UPDATE_INTERVAL = 500;
+const unsigned long SENSOR_UPDATE_INTERVAL = 50;
 
 void _log();
 
@@ -79,7 +79,6 @@ void loop()
     // Update presdsure and flow periodically
     unsigned long currentMillis = millis();
     if (currentMillis - lastSensorUpdate >= SENSOR_UPDATE_INTERVAL)
-
     {
         lastSensorUpdate = currentMillis;
 
@@ -128,7 +127,7 @@ void loop()
         fillControl.updateUI();
     }
 
-    delay(10); // Small delay for stability
+    delay(5); // Small delay for stability
 }
 
 void _log()
