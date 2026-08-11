@@ -60,6 +60,9 @@ void PressureControl::reset()
 int PressureControl::getPressure()
 {
     // Placeholder for actual pressure reading logic
+    return 0;
+    /*
+
     if (digitalRead(_overPressure) == LOW)
     {
         // Over pressure condition
@@ -75,6 +78,7 @@ int PressureControl::getPressure()
         // Normal pressure condition
         return 0; // Example value indicating normal pressure
     }
+        */
 }
 
 int PressureControl::underPressure()

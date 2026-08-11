@@ -27,7 +27,7 @@ MenuManager menuManager;
 PasteurizerRelays pasteurizerRelays(4, 5, 6, 7); // on the arduino shield, 4, 7, 8, 12
 TemperatureSensor chamberTemperatureSensor(A0);
 
-FillControl fillControl(5, 105, 707.0f); // valve pin, target distance (mm), cavity surface area cm^2, fill amount liters
+FillControl fillControl(5, 125, 707.0f); // valve pin, target distance (mm), cavity surface area cm^2, fill amount liters
 
 PressureControl pressureControl(2, 3, 4, 6);
 
