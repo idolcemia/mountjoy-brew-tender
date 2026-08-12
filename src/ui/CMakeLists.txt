@@ -1,10 +1,11 @@
-SET(SOURCES components/ui_comp_switch1.c
-    components/ui_comp.c
-    screens/ui_Screen1.c
+SET(SOURCES ui_comp_switch1.c
+    ui_comp.c
+    ui_Home.c
     ui.c
-    components/ui_comp_hook.c
+    ui_comp_hook.c
     ui_helpers.c
     ui_events.c
-    images/ui_img_possum_png.c)
+    ui_img_possum_png.c
+    ui_img_1324469499.c)
 
 add_library(ui ${SOURCES})
